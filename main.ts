@@ -83,7 +83,10 @@ biasDerivativeLogistic([1],
                         [3],
                         [4]],
                         [1,0,1,0]),
-    1)
+    ((g([1],2,[1]) - 1) + 
+    (g([1],2,[2])) + 
+    (g([1],2,[3]) - 1) + 
+    (g([1],2,[4])))/4)
 
 function biasDerivativeLogistic (w,b,X,y) {
     /* 
