@@ -1,7 +1,7 @@
 // typescript logistic regression package
 
 // perform logistic regression and return a prediction function
-function logistic (X, y, alpha=0.1,iterations=50000,predictionThreshold=0.5) {
+function logistic (X, y, alpha=0.1,iterations=1000,predictionThreshold=0.5) {
     
     /*
         X is a 2d array of inputs
@@ -63,6 +63,7 @@ function costDerivativesLogistic (w,b,X,y) {
             result += loss*X[i][j]
         }
         result = result/X.length
+        
         resultArr[j] = result
     }
     return resultArr
@@ -134,11 +135,8 @@ function zeroes(arr) {
 function mean(arr) {
     let result_arr = Array.from(Array.from("".repeat(arr[0].length))).map(() => 0)
     for (let j = 0; j < arr[0].length; j++) { // for each input (column)
-        // console.log(`j is ${j}`)
         for (let i = 0; i < arr.length; i++){ // for each example (row)
-            // console.log(`i is ${i}`)
             result_arr[j] = (arr.reduce((sum,nextval) => sum + nextval[j], 0)/arr.length)
-            // console.log(`result_arr is now ${result_arr}`)
             
         }
     }
@@ -155,29 +153,16 @@ function norm(arr) {
     // and calling Math.max/Math.min
     let vectors = zeroes(arr[0])
         .map(i => zeroes(arr))
-    // console.log(vectors)
-    for (let j = 0; j < arr[0].length; j++) { // for each column
-            // console.log(`j is ${j}, so we're accessing the list ${vectors[j]}`)
+    for (let j = 0; j < arr[0].length; j++) { // for each column`)
         for (let i = 0; i < arr.length; i++) { // for each row
-            // console.log(`i is ${i}`)
-            // console.log(`BEFORE vectors[${j}] is ${vectors[j]}`)
             vectors[j][i] = arr[i][j]
-            // console.log(`AFTER vectors[${j}] is ${vectors[j]}`)
-            // console.log("\nthis is vectors right now:")
-            // console.log(vectors)
             
         }
     }
     
-    // console.log(vectors)
     let maxes = vectors.map(lon => Math.max(...lon))
     let mins = vectors.map(lon => Math.min(...lon))
-    console.log(maxes)
-    console.log(mins)
-    // console.log(arr)
-    // console.log(zeroes([1,2,3]))
     let resultArrList = zeroes(arr).map(() => zeroes(arr[0]))
-    // console.log(resultArrList)
     for (let j = 0; j < arr[0].length; j++) { // for each column
         for (let i = 0; i < arr.length; i++) { // for each row
             resultArrList[i][j] = (arr[i][j] - means[j])/(maxes[j] - mins[j])
@@ -257,5 +242,5 @@ let y_test = [
 ]
 const predictTest = logistic(X_test,y_test)
 console.log("Predictions:")
-console.log(predictTest([27,18]))
-console.log(predictTest([0,0]))
+console.log(predictTest([27,18])) // predicts 1
+console.log(predictTest([0,0])) // predicts 0 if correct
