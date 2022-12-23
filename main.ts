@@ -1,7 +1,7 @@
 // typescript logistic regression package
 
 // perform logistic regression and return a prediction function
-function logistic (X, y, alpha=0.1,iterations=5000,predictionThreshold=0.5) {
+function logistic (X, y, alpha=0.1,iterations=50000,predictionThreshold=0.5) {
     
     /*
         X is a 2d array of inputs
@@ -34,7 +34,7 @@ function logistic (X, y, alpha=0.1,iterations=5000,predictionThreshold=0.5) {
 
     // prediction function
     return function (X_new) {
-        if (0.5 < g(w,b,X_new)) {
+        if (predictionThreshold < g(w,b,X_new)) {
             return 1
         } else {
             return 0
