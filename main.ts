@@ -1,7 +1,7 @@
 // typescript logistic regression package
 
 // perform logistic regression and return a prediction function
-function logistic (X, y, alpha=0.1,iterations=1000,predictionThreshold=0.5) {
+function logistic (X, y, alpha=0.1,iterations=10000,predictionThreshold=0.5) {
     
     /*
         X is a 2d array of inputs
@@ -12,11 +12,11 @@ function logistic (X, y, alpha=0.1,iterations=1000,predictionThreshold=0.5) {
     */
 
     // normalize each value of X
-    let X_norm  = norm(X)
+    let [X_norm, maxes, mins, means]  = norm(X)
 
 
-    let w = zeroes(X_norm[0]).map(() => Math.ceil(Math.random()*4))
-    let b = Math.ceil(Math.random()*4)
+    let w = zeroes(X_norm[0]).map(() => Math.ceil(Math.random()))
+    let b = Math.ceil(Math.random())
 
     // begin gradient descent
     for (let n = 0; n < iterations; n++) { // for n iterations
@@ -26,15 +26,20 @@ function logistic (X, y, alpha=0.1,iterations=1000,predictionThreshold=0.5) {
 
         // then update each w with the calculated derivatives
         for (let j = 0; j < w.length; j++) {
-            w[j] = w[j] - alpha*dw_dj[j]
+            w[j] = w[j] - (alpha*dw_dj[j])
         }
         // update bias parameter
-        b = b - alpha * db_dj
+        b = b - (alpha * db_dj)
+        if (n % 100 === 0) {
+            console.log("w is", w, "and b is",b)
+            console.log(`Cost is ${costLogistic(w,b,X_norm,y)}`)
+        }
     }
 
     // prediction function
     return function (X_new) {
-        if (predictionThreshold < g(w,b,X_new)) {
+        let XNewScaled = scale(X_new,maxes,mins,means)
+        if (predictionThreshold < g(w,b,XNewScaled)) {
             return 1
         } else {
             return 0
@@ -171,15 +176,24 @@ function norm(arr) {
             resultArrList[i][j] = (arr[i][j] - means[j])/(maxes[j] - mins[j])
         }
     }
-    return resultArrList
+    return [resultArrList, maxes, mins, means]
 }
 
+// normalize new data based on previously-calculated maxes mins and means
+function scale(x, maxes, mins, means){
+    // x is a 1D vector; a collection of inputs
+    // maxes, mins, and means are same length as x; they represent information about the data the model was build with
+    let result = zeroes(x)
+    for (let i = 0; i < x.length; i++) {
+        result[i] = (x[i] - means[i])/(maxes[i] - mins[i])
+    }
+    return result
 
-
+}
 
 test("Norm", norm([[1,2],
       [3,4],
-      [5,6]]),
+      [5,6]])[0],
       [[-0.5,-0.5],[0.0,0.0],[0.5,0.5]])
 
 // debug notes:
@@ -224,6 +238,22 @@ function checkArrayEquality (a1,a2) {
     return true
 }
 
+function costLogistic(w,b,X,y) {
+    /*
+    w is 1D vector of parameters
+    b is bias parameter
+    X is 2D matrix of inputs
+    y is 1D vector of outputs
+    */
+   let result = 0
+   for (let i = 0; i < X.length; i++) {
+    const loss = -y[i] * Math.log10(g(w,b,X[i])) + (1 - y[i]) * (Math.log10(1 - g(w,b,X[i])))
+    // console.log(`Loss at i = ${i}; w = ${w}; b = ${b}; y[i] = ${y[i]}; X[i] = ${X[i]}: ${loss}. g at this value is ${g(w,b,X[i])}`)
+    result += loss
+   }
+   return result/(X.length)
+}
+
 // .load main.ts
 
 // test dataset
@@ -234,16 +264,20 @@ let X_test = [
     [3,4],
     [26,20],
     [1,3],
-    [20,21]
+    [20,21],
+    [3,3],
+    [3,4]
 ]
 let y_test = [
     0,
     0,
     1,
     0,
-    1
+    1,
+    0,
+    0
 ]
-const predictTest = logistic(X_test,y_test)
+const predictTest = logistic(X_test,y_test,0.01)
 console.log("Predictions:")
 console.log(predictTest([27,18])) // predicts 1
-console.log(predictTest([0,0])) // predicts 0 if correct
+console.log(predictTest([3,3])) // predicts 0 if correct
