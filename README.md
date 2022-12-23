@@ -6,3 +6,4 @@ The main ```logistic()``` function takes a 2D matrix of inputs and a 1D vector o
 
 I made this primarily to reinforce my understanding of basic machine learning concepts, but if you want to use it to run logistic regression on the web, that's OK with me.
 
+Included with the main.ts file is some code that performs logistic regression, using this API, on the highly-popular heart disease dataset. This serves as sort-of a proof-of-concept/benchmark, and was coded in about two minutes. Please don't hold its crudeness against the rest of the project
